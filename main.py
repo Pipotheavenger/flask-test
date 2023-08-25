@@ -1,13 +1,45 @@
-from flask import Flask, jsonify
-import os
+from flask import Flask , render_template , request , jsonify
+import requests
 
 app = Flask(__name__)
-
-
-@app.route('/')
+API = "sec_XPTc23DgFiNZoQEyyR1Dhk1jVOyQBHJ0"
+@app.route("/")
 def index():
-    return jsonify({"Choo Choo": "Welcome to your Flask app 🚅"})
+    return render_template('chat.html')
 
+@app.route("/get",methods = ["GET","POST"])
+def chat():
+    msg = request.form['msg']
+    input = msg
+    return get_chat_response(input)
 
-if __name__ == '__main__':
-    app.run(debug=True, port=os.getenv("PORT", default=5000))
+def get_chat_response(text:str):
+    headers = {
+        'x-api-key': API,
+        "Content-Type": "application/json",
+    }
+
+    data = {
+        'sourceId': "cha_st6yE6PEKPjkqbE7MnCur",
+        'messages': [
+            {
+                'role': "user",
+                'content': str(text),
+            }
+        ]
+    }
+
+    response = requests.post(
+        'https://api.chatpdf.com/v1/chats/message', headers=headers, json=data)
+
+    if response.status_code == 200:
+        return response.json()['content']
+    else:
+        print('Error:', response.text)
+        return str(response.status_code)
+        
+        
+        
+            
+if __name__ == "__main__":
+    app.run()
