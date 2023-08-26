@@ -24,7 +24,7 @@ def get_chat_response(text:str):
         'messages': [
             {
                 'role': "user",
-                'content': str(text),
+                'content': "Responde en español la siguiente pregunta : "+str(text),
             }
         ]
     }
